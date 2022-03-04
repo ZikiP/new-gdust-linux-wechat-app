@@ -1,0 +1,10 @@
+dist/
+deploy_versions/
+.temp/
+.rn_temp/
+node_modules/
+.DS_Store
+.vscode
+package-lock.json
+# taro运行时会重新生成对应tailwind.config,故不需要上传根目录下的tailwind.config.js
+tailwind.config.js
