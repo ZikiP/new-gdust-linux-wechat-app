@@ -1,6 +1,5 @@
 import { View } from '@tarojs/components'
 
-
 type PropsType = {
   content: any
 }
