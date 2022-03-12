@@ -1,9 +1,9 @@
-const range = (size) =>
-    Object.fromEntries(
-        [...Array(size).keys()]
-            .slice(1)
-            .map((i) => [`${i}_${size}`, `${(i / size) * 100}%`])
-    );
+// const range = (size) =>
+//     Object.fromEntries(
+//         [...Array(size).keys()]
+//             .slice(1)
+//             .map((i) => [`${i}_${size}`, `${i} / ${size}`])
+//     );
     const generateSpacing = (num) => {
       return new Array(num).fill(1).reduce(
         (cur, next, index) => ({ ...cur, [index]: `${index * 2 }rpx`}),
@@ -11,6 +11,7 @@ const range = (size) =>
       );
     };
     module.exports = {
+      preflight: false,
       prefixer: false,
       separator: "_",
       compile: false,
@@ -68,14 +69,14 @@ const range = (size) =>
           auto: "auto",
           full: "100%",
           screen: "100vw",
-          ...Object.assign(...[2, 3, 4, 5, 6, 12].map(range)),
+          // ...Object.assign(...[2, 3, 4, 5, 6, 12].map(range)),
           ...theme("spacing"),
         }),
         height: (theme) => ({
           auto: "auto",
           full: "100%",
           screen: "100vh",
-          ...Object.assign(...[2, 3, 4, 5, 6, 12].map(range)),
+          // ...Object.assign(...[2, 3, 4, 5, 6, 12].map(range)),
           ...theme("spacing"),
         }),
         maxHeight: {
