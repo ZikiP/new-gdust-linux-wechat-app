@@ -1,10 +1,13 @@
-import { View, Text, ScrollView } from '@tarojs/components'
+import { View, Text, ScrollView, Image, Swiper, SwiperItem } from '@tarojs/components'
 import Taro, { getCurrentInstance, useDidShow, useTabItemTap } from '@tarojs/taro'
 import { useEffect, useState } from 'react'
 import { loginLoad } from '~/src/service/handleService'
 import { getSchedule, updateSchedule } from '~/src/service/servers'
 import formatTime from '~/src/utils/formatTime'
 import { getCache, setCache } from '~/src/utils/storage'
+import Left from '@img/core/common/left_g.png'
+import Right from '@img/core/common/right_g.png'
+import Down from '@img/core/common/down_w.png'
 
 const ClassSchedule = (): JSX.Element => {
 
@@ -103,6 +106,7 @@ const ClassSchedule = (): JSX.Element => {
   const [month, setMonth] = useState<number>(0) //当前月份数
   const [lessons, setLessons] = useState<Array<any>>([]) //课程data
   const [dates, setDates] = useState<Array<any>>([]) //本周日期
+  const [changeLook, setChangeLook] = useState<boolean>(false) // 底部卡片视图是否切换
 
   useEffect(()=> {
     loginLoad().then(()=> {
@@ -235,7 +239,6 @@ const ClassSchedule = (): JSX.Element => {
    * @returns
    */
   const showDetail =(day:any, wid:any, cid:any)=> {
-    const iweek = week
     let ilessons = lessons[day][wid]
     let targetI = 0
     ilessons[cid].target = true
@@ -248,9 +251,12 @@ const ClassSchedule = (): JSX.Element => {
       if (ilessons.length === 1) {
         e.left = 0
       }else {
+        //笼罩层卡片防止超出课表区域
+        //周一~周四0~3:n lessons.length>=2*n+1时，设置left0为-n*128，否则设置为-60*(lessons.length-1)；
+        //周日~周五6~4:n lessons.length>=2*(6-n)+1时，设置left0为-(7-n-lessons.length)*128，否则设置为-60*(lessons.length-1)；
         let left0 = -60 * (ilessons.length - 1)
         if (day <=3 && ilessons.length >=2 * day +1) {
-          left0 = day * 128;
+          left0 = -day * 128;
         } else if (day >= 4 && ilessons.length >= 2 * (6 - day) + 1){
           left0 = -(7 - day - ilessons.length) * 128;
         }
@@ -268,7 +274,7 @@ const ClassSchedule = (): JSX.Element => {
       return false
     }
     setTargetX(day * 129 + 35 + 8)
-    setTargetY(wid * 206 + Math.floor(wid / 2) * 4 + 60 +8)
+    setTargetY(wid%2==0? wid * 206 + Math.floor(wid / 2) * 4 + 62: wid * 206 + Math.floor(wid / 2) * 4 + 68)
     setTargetDay(day)
     setTargetI(targetI)
     setTargetWid(wid)
@@ -288,6 +294,32 @@ const ClassSchedule = (): JSX.Element => {
       setTargetLen(0)
   }
 
+  const returnCurrent = () => {
+    setWeek(toweek)
+  }
+  const swiperChangeBtn = (direction) => {
+    let flag = 0
+    if (delayShow) {
+      setDelayShow(false)
+      if (week == 1 && direction === 'left') {
+        flag = 0;
+      } else if (direction == 'left') {
+        flag = -1
+      } else if (direction == 'right') {
+        flag = 1
+      }
+      setWeek(week+flag)
+    }
+    setDelayShow(true)
+  }
+  const currentChange = (e) => {
+    if (!changeLook) {
+      setChangeLook(true)
+      let current = e.detail.current
+      setWeek(current+1)
+      setChangeLook(false)
+    }
+  }
   const infoCardTop = (e,cid) => {
     e.stopPropagation();// 防止事件冒泡。
     if(targetI === cid) {
@@ -295,7 +327,7 @@ const ClassSchedule = (): JSX.Element => {
     }
     setTargetI(cid)
   }
-  const topList = () => {
+  const topList = ():JSX.Element => {
     return <View className={`absolute top-0 left-0 flex w-910rpx h-30 pl-5 border-0 border-b-1 border-solid border-gray-200 ml-18 text-gray-600 overflow-hidden ${blur? 'filter-blur-3px':''}`}>
       {
         dates[week-1] &&
@@ -308,20 +340,20 @@ const ClassSchedule = (): JSX.Element => {
       }
     </View>
   }
-  const kbCards = () => {
-    return <View className='absolute w-full h-full top-0 left-0 flex flex-1 items-stretch pt-4 pr-0 pb-6 pl-5 ml-35rpx mt-60rpx pb-50 overflow-hidden kb-cards-transition'>
+  const kbCards = ():JSX.Element => {
+    return <View className={`${blur? 'filter-blur-3px ':''}absolute w-910rpx h-1248rpx top-0 left-0 flex flex-1 items-stretch pt-4 pr-0 pb-6 pl-5 ml-35rpx mt-60rpx pb-100rpx overflow-hidden kb-cards-transition`}>
         {
           lessons &&
           lessons.map((day_lesson, day)=> {
             // 每一列为一组
-            return <View key={day} className='relative flex flex-1 flex-col items-stretch w-60 h-full bg-transparent mr-5'>
+            return <View key={day} className='relative flex flex-1 flex-col items-stretch w-120rpx h-full bg-transparent mr-5'>
               {/* today 0周一,1周二 */}
               {
                 // 在今天的那一列渲染一个半透明遮罩
                 today === day && toweek === week?
                 <>
-                  <View className='absolute w-60 -top-4 -bottom-6 z-1 opacity-60 transition-all duration-100 mask-bg' style={`background:-webkit-gradient(linear,left top,left bottom,from(#eff7ff),color-stop(${(timelineTop+4)/1260}, #8cc4ff),to(#eff7ff));`}></View>
-                  <View className='hidden absolute left-0 right-0 top-1_2 -mt-1 w-60 h-5rpx theme-bg-color z-99 opacity-60 kb-timeline'
+                  <View className='absolute w-120rpx -top-4 -bottom-6 z-1 opacity-60 transition-all duration-100 mask-bg' style={`background:-webkit-gradient(linear,left top,left bottom,from(#eff7ff),color-stop(${(timelineTop+4)/1260}, #8cc4ff),to(#eff7ff));`}></View>
+                  <View className='hidden absolute left-0 right-0 top-1_2 -mt-1 w-120rpx h-5rpx theme-bg-color z-99 opacity-60 kb-timeline'
                   style={`display:block !important; top:${timelineTop}rpx`}
                   ></View>
                 </>
@@ -346,7 +378,7 @@ const ClassSchedule = (): JSX.Element => {
                               <Text className={parseInt(cards.place)< 99999 ?'text-16 py-15rpx px-0':'text-18 py-15rpx px-0 leading-20'}>{cards.place}</Text>
                             }
                             <View className='flex flex-1 items-center justify-center '>
-                              <Text className='text-25rpx pb-5rpx'style={`-webkit-line-clamp:${3*(cards.section-1)};`}>{cards.name}</Text>
+                              <Text className='text-25rpx leading-27rpx pb-5rpx'style={`-webkit-line-clamp:${3*(cards.section-1)};`}>{cards.name}</Text>
                             </View>
                           </View>
                           :
@@ -364,26 +396,27 @@ const ClassSchedule = (): JSX.Element => {
   }
 
   const mask = ():JSX.Element => {
-    console.log(targetLessons)
     return <>
      {blur?
       <View onClick={hideDetail}
         className="absolute z-998 top-0 left-0 right-0 w-910rpx h-1248rpx pt-68rpx pr-0 pb-100rpx pl-45rpx mask-transition"
       >
-        <View className='absolute h-full z-999 w-120rpx' style={`top:${targetY}rpx; left:${targetX}rpx;`}>
+        <View className='absolute z-999 w-120rpx' style={`top:${targetY}rpx; left:${targetX}rpx;`}>
           {
             targetLessons &&
             targetLessons.map((cards,cid)=> {
               return <View style={`height:${cards.section*100}rpx !important; left:${cards.left}rpx`}
-                className={`absolute shadow-xl kb-detail-transition ${cards.color} ${targetI === cid ? 'kb-detail-active':''}`}
+                className={`absolute z-11 w-120rpx min-h-200rpx py-0 px-5 text-center box-border rounded-xl flex flex-col overflow-hidden text-white shadow-xl flex-nowrap
+                kb-detail-transition
+                ${cards.color} ${targetI === cid ? 'kb-detail-active':''}`}
                 onClick={(e)=>infoCardTop(e,cid)}
               >
                 {
                     // 判断上课地点是数字还是中文
                     <Text className={parseInt(cards.place)< 99999 ?'text-16 py-15rpx px-0':'text-18 py-15rpx px-0 leading-20'}>{cards.place}</Text>
                 }
-                <View className='flex flex-1 items-center justify-center '>
-                  <Text className='text-25rpx pb-5rpx'style={`-webkit-line-clamp:${3*(cards.section-1)};`}>{cards.name}</Text>
+                <View className='flex flex-1 items-center justify-center overflow-hidden'>
+                  <Text className='text-25rpx pb-5rpx mask-card-content'style={`-webkit-line-clamp:${3*(cards.section-1)};`}>{cards.name}</Text>
                 </View>
               </View>
             })
@@ -396,17 +429,120 @@ const ClassSchedule = (): JSX.Element => {
     </>
   }
 
+  const bottomCard = ():JSX.Element => {
+    return <View catchMove
+      className={`fixed z-1000 left-0 right-0 bottom-0 w-full h-500rpx flex flex-col items-stretch rounded-t-lg pb-30rpx bg-blue-300 text-14 kb-detail-transition
+        bottom-card-transform ${blur? 'bottom-card-open-transform':''}
+      `}
+    >
+      {
+        (!blur)
+        ?
+        <View className='text-white h-100rpx w-full flex items-center'>
+          {
+            week != 99999?
+            <>
+            {
+              <Text className='w-150rpx'>{}</Text>
+            }
+            {
+              week != 99999?
+              <View className='flex flex-1 flex-row relative text-16 h-full my-0'>
+                <View className='absolute z-999 top-0 w-50rpx h-full flex items-center justify-center left-70rpx'
+                  onClick={() => swiperChangeBtn('left')}
+                >
+                  <Image className='w-30rpx h-30rpx opacity-50' src={Left}></Image>
+                </View>
+                <Swiper
+                  circular
+                  className='h-full w-full'
+                  onChange={(e)=>currentChange(e)} current={week-1}
+                  duration={300}
+                >
+                  {
+                    classInfo.weeks.map((e,i)=> {
+                      return <SwiperItem key={i} className='flex justify-center items-center w-full h-full text-center'>
+                        <Text  className={`text-15 ${i===toweek-1?'font-bold':'' }`}>{e}</Text>
+                      </SwiperItem>
+                    })
+                  }
+                </Swiper>
+                <View className='absolute z-999 top-0 w-50rpx h-full flex items-center justify-center right-70rpx'
+                  onClick={() => swiperChangeBtn('right')}
+                >
+                  <Image className='w-30rpx h-30rpx opacity-50' src={Right}></Image>
+                </View>
+              </View>
+
+              :
+              ''
+            }
+            {
+              <Text className='w-150rpx py-10 px-5 text-center' onClick={()=>returnCurrent()}>{toweek===week?`星期${classInfo.days[today]}`:`返回第${toweek}周` }</Text>
+            }
+            </>
+            :
+            <View>
+              <Text className='w-150rpx py-10 px-5 text-center'>{toweek}周周{classInfo.days[today]}</Text>
+            </View>
+          }
+        </View>
+        :
+        <>
+          <View className='text-white h-100rpx w-full flex items-center'>
+            <Text className='w-150rpx text-16 py-10 px-5 text-center'>{`${week!=99999? week+'周周'+classInfo.days[targetDay]:'星期'+classInfo.days[targetDay]}`}</Text>
+            <Text className='text-16 flex-1 w-250rpx text-left pl-5'>{targetWid*2+1}-{targetWid*2+targetLessons[targetI].section}节</Text>
+            <Image className="w-15 h-15 py-25rpx px-35rpx" src={Down} onClick={() => hideDetail()}></Image>
+          </View>
+        </>
+
+      }
+      <View className={`flex flex-nowrap w-full h-350rpx bg-blue-300 box-border p;-10 overflow-hidden ${blur?'opacity-100 transform translate-y-0rpx':'opacity-0 transform translate-y-400rpx'}`}>
+        {
+          targetLessons.map((e,cid) => {
+            return <View key={cid} className='w-full h-400rpx flex flex-col flex-nowrap items-stretch text-white box-border py-0 px-5 kb-detail-transition'>
+              <View className='flex items-center h-100rpx w-580rpx pt-o pr-0 pl-10'>
+                <Text className='text-20'>{e.name}</Text>
+              </View>
+              <View className='relative flex flex-1 flex-col items-stretch justify-center pl-15rpx'>
+                <View className='relative z-2 flex items-center flex-nowrap whitespace-nowrap text-14 py-3 px-0'>
+                  <Text className='flex-shrink-0 text-18'>任课教师：{e.teacher}</Text>
+                </View>
+                <View className='relative z-2 flex items-center flex-nowrap whitespace-nowrap text-14 py-3 px-0'>
+                  <Text className='flex-shrink-0 text-18'>上课地点：{e.place}</Text>
+                </View>
+                <View className='relative z-2 flex items-center flex-nowrap whitespace-nowrap text-14 py-3 px-0'>
+                  <Text className='flex-shrink-0 text-18'>课程周数：{e.weeks_text}</Text>
+                </View>
+              </View>
+            </View>
+          })
+        }
+      </View>
+    </View>
+  }
+
   return (
     <View className='bg-white pb-0 w-full h-full absolute overflow-hidden'>
-      <View className={blur?'relative w-full h-1328rpx flex flex-row mian-box-transition pb-250':'relative w-full h-1328rpx flex flex-row pb-50 mian-box-transition'}>
+      <View className={
+        blur?
+        'relative w-full h-1328rpx flex flex-row mian-box-transition pb-500rpx'
+        :
+        'relative w-full h-1328rpx flex flex-row pb-50 mian-box-transition'}>
         <View className={
           blur?
-          'absolute top-0 left-0 z-100 text-14 flex flex-shrink-0 w-18 h-full flex-col items-stretch bg-white border-0 border-r-1 border-solid border-gray-200 mb-6 text-gray-600 pb-50 overflow-hidden filter-blur-3px kb-transform'
+          'absolute top-0 left-0 z-100 text-14 flex flex-shrink-0 w-35rpx h-full flex-col items-stretch bg-white border-0 border-r-1 border-solid border-gray-200 mb-6 text-gray-600 pb-100rpx overflow-hidden filter-blur-3px'
           :
-          'absolute top-0 left-0 z-100 text-14 flex flex-shrink-0 w-18 h-full flex-col items-stretch bg-white border-0 border-r-1 border-solid border-gray-200 mb-6 text-gray-600 pb-50 overflow-hidden'}>
+          'absolute top-0 left-0 z-100 text-14 flex flex-shrink-0 w-35rpx h-full flex-col items-stretch bg-white border-0 border-r-1 border-solid border-gray-200 mb-6 text-gray-600 pb-100rpx overflow-hidden'}>
           <View className='h-30 text-14 leading-15 flex flex-col items-center justify-center border-0 border-b-1 border-b-gray-200  border-solid text-gray-600'>
-            <Text>{month}</Text>
-            <Text>月</Text>
+            {week != 999?
+              <>
+              <Text>{month}</Text>
+              <Text>月</Text>
+              </>
+              :
+              ''
+            }
           </View>
           <View className="pt-4 h-50 leading-50 text-center">1</View>
           <View className="mb-4 h-50 leading-50 text-center">2</View>
@@ -442,6 +578,10 @@ const ClassSchedule = (): JSX.Element => {
           {/* 遮罩层 */}
           {
             mask()
+          }
+          {/* 底部 */}
+          {
+            bottomCard()
           }
 
         </ScrollView>
