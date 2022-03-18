@@ -1,6 +1,6 @@
 import Taro from "@tarojs/taro";
 
-export const setCache = (key: string, value: string | number) => {
+export const setCache = (key: string, value: string | number |object[]) => {
   if(!key || !value) {
     return;
   }
