@@ -36,10 +36,17 @@ export const freshLogin = (method, url, data?, param?) => {
  * @param code
  * @returns
  */
-export const getToday = (code) => {
-  return HTTPREQUEST.get('/api/v1/schedule/today/', {}, code)
+export const getToday = () => {
+  return HTTPREQUEST.get('/api/v1/schedule/today')
 }
 
+/**
+ * 更新首页展示的上课信息
+ * @returns
+ */
+export const updateToday = () => {
+  return HTTPREQUEST.get('/api/v1/schedule/today/update')
+}
 /**
  * 获取公告信息
  * @returns
@@ -53,8 +60,8 @@ export const getNotices = () => {
  * @param account
  * @returns
  */
-export const getUserInfo = (account) => {
-  return HTTPREQUEST.get('/api/v1/info/', {}, account)
+export const getUserInfo = () => {
+  return HTTPREQUEST.get('/api/v1/info')
 }
 
 /**
@@ -62,8 +69,8 @@ export const getUserInfo = (account) => {
  * @param account
  * @returns
  */
-export const getSchedule = (account) => {
-  return HTTPREQUEST.get('/api/v1/schedule/', {}, account)
+export const getSchedule = () => {
+  return HTTPREQUEST.get('/api/v1/schedule')
 }
 
 /**
@@ -73,4 +80,12 @@ export const getSchedule = (account) => {
  */
 export const updateSchedule = () => {
   return HTTPREQUEST.get('/api/v1/schedule/update')
+}
+
+export const getAchievement = (term, year) => {
+  return HTTPREQUEST.get(`/api/v1/score?term=${term}&year=${year}`)
+}
+
+export const getCurrentYear = () => {
+  return HTTPREQUEST.get('/api/v1/score/get_current_year')
 }

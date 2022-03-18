@@ -6,10 +6,11 @@ import { pageToLogin } from "@/utils/errorHandle"
 import { HTTP_STATUS } from '~/config/httpConfig'
 import { setCache } from "../utils/storage"
 import { loginLoad } from './handleService';
-import { BASE_URL } from '~/config/httpConfig';
+import getBaseUrl from './baseUrl';
 
 const customInterceptor = (chain) => {
-
+  console.log(chain)
+  const BASE_URL = getBaseUrl()
   const requestParams = chain.requestParams
   const url = (requestParams.url).replace(BASE_URL,'')
   const method = requestParams.method

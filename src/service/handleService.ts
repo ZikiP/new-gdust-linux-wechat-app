@@ -59,7 +59,7 @@ export const session_login =()=> {
             setTimeout(function () {
               // 跳转到个人页面
               Taro.navigateTo({
-                url: '/pages/more/login'
+                url: '/pages/more/Login/index'
               })
             }, 0)
           }

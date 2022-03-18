@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
-import { BASE_URL } from '~/config/httpConfig';
 import { getCache } from '@/utils/storage';
 import interceptors from './interceptors'
+import getBaseUrl from './baseUrl'
 
 
 type paramsType = {
@@ -16,11 +16,11 @@ interceptors.forEach(interceptorItem => Taro.addInterceptor(interceptorItem))
 class httpRequest {
   baseOptions(params, method) {
     let { url, data, param } = params;
+    const BASE_URL = getBaseUrl()
     let contentType = "application/json;charset=UTF-8";
     contentType = params.contentType || contentType;
     param = params.param || '';
     const session_id = getCache('token') || null
-    console.log(session_id)
     let header = {}
     if (session_id != '') {
       header = {
