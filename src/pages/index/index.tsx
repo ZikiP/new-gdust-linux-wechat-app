@@ -10,7 +10,7 @@ import Zsd from '@img/core/zs@disabled.png'
 import Taro, { useDidShow, useReady } from '@tarojs/taro'
 import {setCache, getCache} from '@/utils/storage'
 import { loginLoad, session_login } from '~/src/service/handleService'
-import { getNotices, getToday } from '~/src/service/servers'
+import { getNotices, getToday, updateToday } from '~/src/service/servers'
 import { useState } from 'react'
 
 type navItem = {
@@ -23,7 +23,9 @@ type navItem = {
 type navType = Array<navItem>
 
 const Index = (): JSX.Element => {
-  const[scheduleList, setScheduleList] = useState([])
+
+  const [scheduleList, setScheduleList] = useState<Array<object>>([])
+  const [notice, setNotice] =useState<Array<object>>([])
   const navList: navType = [
     {
       icon: Kb,
@@ -34,7 +36,7 @@ const Index = (): JSX.Element => {
     {
       icon: Cj,
       text: '查询成绩',
-      url: '/pages/more/login',
+      url: '/subPackages/Achievement/index',
       available: true
     },
     {
@@ -56,6 +58,10 @@ const Index = (): JSX.Element => {
       available: false
     }
   ]
+
+  Taro.usePullDownRefresh(() => {
+    updateScheduleInfo()
+  })
 
   const navCard = () => {
     return <View className='grid grid-cols-4 gap-x-4 gap-y-12 py-8'>
@@ -110,20 +116,39 @@ const Index = (): JSX.Element => {
     }
   }
 
-  const getScheduleInfo= () => {
-    loginLoad().then(function() {
-      const account = getCache('account')
-      const _getToday = async () => {
-        const res:any = await getToday(account)
-        setScheduleList(res.detail)
-      }
-      _getToday().catch(error=>console.log(error))
+  const goSchedule = () => {
+    Taro.navigateTo({
+      url:'../../subPackages/classSchedule/index'
     })
+  }
+
+  const getScheduleInfo = () => {
+    loginLoad().then( async() =>{
+      const res:any = await getToday()
+      setScheduleList(res.detail)
+    }).catch(e=>console.log(e));
+  }
+
+  const updateScheduleInfo = async() => {
+    loginLoad().then( async() =>{
+      const res:any = await updateToday()
+      if(res.message === 'success') {
+        setScheduleList(res.detail)
+        Taro.showToast({
+          title: '刷新成功',
+          icon: 'success',
+          duration: 1500
+        })
+      }
+
+    }).catch(e=>console.log(e));
   }
 
   const getNoticesInfo =  async () => {
     const res: any = await getNotices()
-    console.log(res)
+    if (res.message === 'success') {
+      setNotice(res.detail)
+    }
   }
 
   useDidShow(() => {
@@ -131,11 +156,11 @@ const Index = (): JSX.Element => {
       session_login()
     }
   })
-
   // 相当于onReady函数，页面初次渲染之后触发（只是初次，下一次页面渲染就没他什么事），只触发一次。
   useReady(() => {
-    // \r\n的换行只有在真机测试才能生效
     getScheduleInfo()
+    getNoticesInfo()
+    // \r\n的换行只有在真机测试才能生效
     var content = '使用本小程序(e广科)\r\n即代表同意以下条款：\r\n1.e广科提供内容或服务仅供于个人学习、研究或欣赏娱乐等用途。\r\n2.使用e广科绑定教务系统，即同意e广科代理取得教务系统个人相关信息，包括成绩与课表等\r\n3.e广科提供的内容均会缓存在e广科后台，用户使用时自动更新\r\n4.取得信息均以本校教务系统为准，e广科无法保证信息的实时性\r\n5.使用本工具风险由您自行承担，e广科不承担任何责任'
     // 免责声明
     if(getCache('mzsm') == '')
@@ -158,14 +183,19 @@ const Index = (): JSX.Element => {
       <View className='p-8'>
         <CCard content={navCard()} />
       </View>
-      <View className='p-8'>
-        <Notice title={'课表安排'} content={
-
-          scheduleCard()
-        }/>
+      <View className='p-8' onClick={() => goSchedule()}>
+        <Notice title={'课表安排'} content={scheduleCard()}/>
       </View>
       <View className='p-8'>
-        <Notice title={'系统公告'} content={'欢迎使用e广科，e广科是一款丰富校园生活的小程序，教务系统每晚8点钟关闭，期间小程序将无法登录以及无法刷新课表。如有建议和异常欢迎您反馈，我们将会第一时间处理。'}/>
+        {
+          notice &&
+          notice.map((e: any,i) => {
+            return <View className='mb-30rpx'>
+              <Notice key={e.id} title={'系统公告'} content={e.body}/>
+            </View>
+
+          })
+        }
       </View>
     </View>
   )
