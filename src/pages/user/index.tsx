@@ -7,7 +7,6 @@ import { getCache } from '~/src/utils/storage'
 import UCard from '@/components/UCard'
 import Issue from '@img/more/issue.png'
 import About from '@img/more/aboutmiao.png'
-import './index.scss'
 import Taro from '@tarojs/taro'
 
 type infoType = {
@@ -26,7 +25,7 @@ const cardList =[
   {
     icon: About,
     title: '关于e广科',
-    url: '/pages/more/about'
+    url: '/pages/more/About/index'
   }
 ]
 
@@ -38,8 +37,7 @@ const User = (): JSX.Element =>  {
     })
   })
   const getData = async() => {
-    const account = getCache('account')
-    const userInfoRes: any = await getUserInfo(account)
+    const userInfoRes: any = await getUserInfo()
     setUserInfo(userInfoRes.detail)
   }
 
@@ -87,7 +85,7 @@ const User = (): JSX.Element =>  {
         )
       }
       </View>
-      <Navigator url='../more/login' className='text-18 leading-36 h-36 bg-red-400 w-95_100 items-center text-white rounded-xl mt-0 mx-9 mb-5 absolute bottom-0'>
+      <Navigator url='../more/Login/index' className='text-18 leading-45 h-45 bg-red-400 w-95_100 items-center text-white rounded-xl mt-0 mx-9 mb-5 absolute bottom-0'>
         <Text className='flex justify-center'>切换绑定</Text>
       </Navigator>
     </View>
