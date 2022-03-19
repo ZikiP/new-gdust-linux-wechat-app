@@ -8,7 +8,6 @@ type PropsType = {
 
 
 export const UCard = (props: PropsType): JSX.Element => {
-  console.log(props.url)
   return <View>
     {
       props.url === ''?
