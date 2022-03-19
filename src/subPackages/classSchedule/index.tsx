@@ -137,6 +137,10 @@ const ClassSchedule = (): JSX.Element => {
     setScroll_left((nowWeek === 6 || nowWeek === 0)? 102 :0)
     console.log(timelineTop)
   })
+
+  Taro.usePullDownRefresh(()=> {
+    updateClassSchedule()
+  })
   /**
    * 获取课表页面课表信息
    * @returns
@@ -153,8 +157,9 @@ const ClassSchedule = (): JSX.Element => {
         resolve()
       })
     }
+
     Taro.showNavigationBarLoading()
-      const res:any = await getSchedule(getCache('account'))
+      const res:any = await getSchedule()
       let data = res.detail
       if(data) {
         kbRender(data)
@@ -203,7 +208,6 @@ const ClassSchedule = (): JSX.Element => {
     setLessons(lessons)
     setDates(dates)
     setMonth(dates[week-1][0].month)
-    // console.log(lessons)
   }
 
   /**
@@ -213,10 +217,16 @@ const ClassSchedule = (): JSX.Element => {
   const updateClassSchedule = async() => {
     const res:any = await updateSchedule()
     const data =res.detail
+    console.log(data)
     if(data) {
       kbRender(data)
       setCache('kb',data)
       Taro.hideNavigationBarLoading()
+      Taro.showToast({
+        title: '刷新成功',
+        icon: 'success',
+        duration: 1500
+      })
       return new Promise<void>((resolve, reject) => {
         resolve()
       })
@@ -228,7 +238,13 @@ const ClassSchedule = (): JSX.Element => {
    * @param e 触摸事件
    */
   const onScroll = (e) => {
-    setScroll_left(e.detail.scrollLeft)
+    // 防抖
+    let t = setTimeout(()=> {
+      setScroll_left(e.detail.scrollLeft)
+    },500)
+    if (t) {
+      clearTimeout(t)
+    }
   }
 
   /**
