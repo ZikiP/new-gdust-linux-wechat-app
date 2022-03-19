@@ -2,11 +2,13 @@ export default {
   pages: [
     'pages/index/index',
     'pages/user/index',
-    'pages/more/login',
-    'pages/more/about',
+    'pages/more/Login/index',
+    'pages/more/About/index',
   ],
+  // 分包配置
   subPackages: [
-    { root:'subPackages/classSchedule', pages:['index']}
+    { root:'subPackages/classSchedule', pages:['index']},
+    { root:'subPackages/Achievement', pages:['index']}
   ],
   window: {
     backgroundTextStyle: 'light',

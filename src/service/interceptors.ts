@@ -41,7 +41,7 @@ const customInterceptor = (chain) => {
         freshLogin(method,url,data).then(function (res) {
           if (res.statusCode === 200) {
             return new Promise((resolve, reject) => {
-            resolve(res)
+              resolve(res)
           })
           }else {
             return new Promise((resolve, reject) => {
