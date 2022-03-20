@@ -59,7 +59,7 @@ const User = (): JSX.Element =>  {
 
   return (
     <View>
-      <View className='theme-color h-80 '></View>
+      <View className='theme-bg-color h-80 '></View>
        <View className='bg-white w-95_100 h-135 border-solid border-gray-100 border-1 mx-auto shadow-2xl rounded-xl relative -top-30'>
           <View className='flex justify-center'>
             <View >
@@ -82,7 +82,7 @@ const User = (): JSX.Element =>  {
           </View>
         </View>
       </View>
-      <View className='py-0 shadow-2xl w-95_100 mx-auto relative -top-15 text-gray-600 text-14'>
+      <View className='py-0 shadow-2xl w-95_100 mx-auto relative -top-15 text-gray-600 text-14 BG'>
       {
         cardList &&
         cardList.map((item, index) => {
