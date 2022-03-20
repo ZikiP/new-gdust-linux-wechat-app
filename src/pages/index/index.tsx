@@ -189,23 +189,25 @@ const Index = (): JSX.Element => {
    * 发送异步请求获取今日公告
    */
   const getNoticesInfo =  async () => {
-    const res: any = await getNotices()
+    loginLoad().then(async () => {
+      const res: any = await getNotices()
     if (res.message === 'success') {
       setNotice(res.detail)
     }
+    }
+    )
   }
 
   useDidShow(() => {
-    //
-    if(getCache('mzsm') != '' && getCache('token') == '') {
-      session_login()
-    }
+
   })
   // 相当于onReady函数，页面初次渲染之后触发（只是初次，下一次页面渲染就没他什么事），只触发一次。
   useReady(() => {
-    getScheduleInfo()
-    getNoticesInfo()
     // \r\n的换行只有在真机测试才能生效
+    if (getCache('mzsm') != '') {
+      getNoticesInfo()
+      getScheduleInfo()
+    }
     var content = '使用本小程序(e广科)\r\n即代表同意以下条款：\r\n1.e广科提供内容或服务仅供于个人学习、研究或欣赏娱乐等用途。\r\n2.使用e广科绑定教务系统，即同意e广科代理取得教务系统个人相关信息，包括成绩与课表等\r\n3.e广科提供的内容均会缓存在e广科后台，用户使用时自动更新\r\n4.取得信息均以本校教务系统为准，e广科无法保证信息的实时性\r\n5.使用本工具风险由您自行承担，e广科不承担任何责任'
     // 免责声明
     if(getCache('mzsm') === '')
@@ -216,7 +218,7 @@ const Index = (): JSX.Element => {
       showCancel: false,
       success: () => {
         setCache('mzsm',1)
-        session_login()
+        loginLoad().then(() => session_login())
       }
     })
 
