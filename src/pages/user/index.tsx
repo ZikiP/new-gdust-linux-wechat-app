@@ -30,17 +30,27 @@ const cardList =[
 ]
 
 const User = (): JSX.Element =>  {
+
   const[userInfo, setUserInfo] = useState<infoType>(Object)
+
   useReady(() => {
     loginLoad().then(()=> {
       getData();
     })
   })
+
+  /**
+   * 获取用户信息
+   */
   const getData = async() => {
     const userInfoRes: any = await getUserInfo()
     setUserInfo(userInfoRes.detail)
   }
 
+  /**
+   * 根据不同的url进行跳转
+   * @param url 目的地址
+   */
   const goView = (url: string) => {
       Taro.navigateTo({
         url
