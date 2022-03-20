@@ -1,7 +1,7 @@
 import { View } from '@tarojs/components'
 
 type PropsType = {
-  content: any
+  content: object
 }
 
 export const CCard = (props: PropsType): JSX.Element => {
