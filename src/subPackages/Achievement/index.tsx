@@ -165,7 +165,7 @@ const Achievement = ():JSX.Element => {
       <Text className="text-20 font-semibold text-gray-600 mr-30rpx">成绩查询</Text>
       <Image className="w-150rpx h-150rpx opacity-80" src={Cj}></Image>
     </View>
-    <View className="h-full bg-white p-30rpx pb-0 mb-100rpx rounded-xl shadow-2xl ">
+    <View className="h-full bg-white p-30rpx mb-100rpx rounded-xl shadow-2xl ">
       <View className=''>
         <Form onSubmit={formSubmit}>
           <View className='flex h-80rpx justify-center items-center'>
