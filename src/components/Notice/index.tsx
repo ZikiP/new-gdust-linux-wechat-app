@@ -1,8 +1,8 @@
 import { View,Text} from '@tarojs/components'
 
 type PropsType = {
-  title: any
-  content: any
+  title: string
+  content: object
 }
 
 
