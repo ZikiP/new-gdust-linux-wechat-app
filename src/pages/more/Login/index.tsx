@@ -14,10 +14,12 @@ const Login = (): JSX.Element => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  useReady(()=> {
 
-  })
-
+  /**
+   * 根据不同的类型保存不同的值
+   * @param type 类型
+   * @param event input事件
+   */
   function handleChange(type: InputType, event) {
     const { value } = event.detail;
     if (type === "username") {
@@ -26,7 +28,9 @@ const Login = (): JSX.Element => {
       setPassword(value);
     }
   }
-
+  /**
+   * 表单处理函数
+   */
   const formSubmit = () => {
     if (!username || !password) {
       Taro.showModal({

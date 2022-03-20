@@ -2,6 +2,11 @@ import Taro from "@tarojs/taro"
 import { getCache, setCache } from "../utils/storage"
 import { getLogin } from "./servers"
 
+/**
+ * 判断用户是否进行登录，如果登录了返回resolve，
+ * 如果没有登录，调用getLogin函数进行登录
+ * @returns
+ */
 export const loginLoad = () => {
   if(getCache('account') != '') {
     return new Promise<void>((resolve,rej)=>{
@@ -29,7 +34,6 @@ export const loginLoad = () => {
           }
           login().catch(error=>console.log(error))
         } else {
-          console.log('登录失败！' + res.errMsg);
           rej('登录失败！' + res.errMsg)
         }
       }
@@ -37,6 +41,10 @@ export const loginLoad = () => {
   })
 }
 
+/**
+ * 判断用户有无绑定教务系统账号，如果没有则跳转至绑定页面
+ * @returns
+ */
 export const session_login =()=> {
   return new Promise<void>(function (resolve, reject) {
     let account = getCache('account') || null

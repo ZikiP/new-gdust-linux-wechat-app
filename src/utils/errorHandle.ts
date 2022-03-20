@@ -14,7 +14,7 @@ export const pageToLogin = () => {
   // Taro.clearStorage()
   if (!path.includes('login')) {
     Taro.reLaunch({
-      url: "/pages/more/login"
+      url: "/pages/more/login/index"
     });
   }
 }

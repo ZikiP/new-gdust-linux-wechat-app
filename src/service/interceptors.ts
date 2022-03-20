@@ -8,6 +8,8 @@ import { setCache } from "../utils/storage"
 import { loginLoad } from './handleService';
 import getBaseUrl from './baseUrl';
 
+// 拦截器
+
 const customInterceptor = (chain) => {
   console.log(chain)
   const BASE_URL = getBaseUrl()
@@ -29,7 +31,7 @@ const customInterceptor = (chain) => {
       return Promise.reject({ desc: "服务端出现了问题" })
 
     } else if (res.statusCode === HTTP_STATUS.FORBIDDEN) {
-      Taro.setStorageSync("Authorization", "")
+
       pageToLogin()
       // TODO 根据自身业务修改
       return Promise.reject({ desc: "没有权限访问" });
@@ -68,10 +70,6 @@ const customInterceptor = (chain) => {
   })
 }
 
-// Taro 提供了两个内置拦截器
-// logInterceptor - 用于打印请求的相关信息
-// timeoutInterceptor - 在请求超时时抛出错误。
-// const interceptors = [customInterceptor, Taro.interceptors.logInterceptor]
 const interceptors = [customInterceptor]
 
 export default interceptors

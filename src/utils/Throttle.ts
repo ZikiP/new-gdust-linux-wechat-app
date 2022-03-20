@@ -1,6 +1,13 @@
 // 封装节流
 import { useCallback, useEffect, useRef } from "react"
 
+/**
+ * 节流hooks
+ * @param fn 需要节流的函数
+ * @param delay 间隔
+ * @param dep
+ * @returns
+ */
 export function useThrottle(fn, delay, dep = []) {
   const { current } = useRef<any>({ fn, timer: null })
   useEffect(

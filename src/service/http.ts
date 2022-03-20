@@ -3,6 +3,7 @@ import { getCache } from '@/utils/storage';
 import interceptors from './interceptors'
 import getBaseUrl from './baseUrl'
 
+// 封装http请求
 
 type paramsType = {
   url: string,

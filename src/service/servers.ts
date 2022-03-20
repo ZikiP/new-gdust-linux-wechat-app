@@ -1,9 +1,8 @@
-import { getCache } from '@/utils/storage';
 import HTTPREQUEST from "@/service/http"
 
 /**
  * 绑定教务系统账号
- * @param data
+ * @param data 账号和密码的对象
  * @returns
  */
 export const  LoginBind = (data)=> {
@@ -12,7 +11,7 @@ export const  LoginBind = (data)=> {
 
 /**
  * 获取登录状态
- * @param param
+ * @param param 微信登录码
  * @returns
  */
 export const getLogin = (param) => {
@@ -21,10 +20,10 @@ export const getLogin = (param) => {
 
 /**
  * 重新获取登录状态
- * @param method
- * @param url
- * @param data
- * @param param
+ * @param method 请求方法
+ * @param url 请求地址
+ * @param data  携带的数据
+ * @param param 携带的参数
  * @returns
  */
 export const freshLogin = (method, url, data?, param?) => {
@@ -33,7 +32,6 @@ export const freshLogin = (method, url, data?, param?) => {
 
 /**
  * 获取首页展示的上课信息
- * @param code
  * @returns
  */
 export const getToday = () => {
@@ -57,7 +55,6 @@ export const getNotices = () => {
 
 /**
  * 获取用户信息
- * @param account
  * @returns
  */
 export const getUserInfo = () => {
@@ -66,7 +63,6 @@ export const getUserInfo = () => {
 
 /**
  * 获取课表页面需要渲染的课表信息
- * @param account
  * @returns
  */
 export const getSchedule = () => {
@@ -75,17 +71,26 @@ export const getSchedule = () => {
 
 /**
  * 获取课表页面更新需要的课表信息
- * @param
  * @returns
  */
 export const updateSchedule = () => {
   return HTTPREQUEST.get('/api/v1/schedule/update')
 }
 
+/**
+ * 获取成绩
+ * @param term 学期
+ * @param year 学年
+ * @returns
+ */
 export const getAchievement = (term, year) => {
   return HTTPREQUEST.get(`/api/v1/score?term=${term}&year=${year}`)
 }
 
+/**
+ * 获取当前年份
+ * @returns
+ */
 export const getCurrentYear = () => {
   return HTTPREQUEST.get('/api/v1/score/get_current_year')
 }
