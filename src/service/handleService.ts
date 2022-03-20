@@ -29,7 +29,6 @@ export const loginLoad = () => {
               });
             } else {
               resolve()
-              console.log('loginLoad:OK');
             }
           }
           login().catch(error=>console.log(error))
@@ -56,6 +55,9 @@ export const session_login =()=> {
     if (account && token) {
       setCache('session_id', token)
       setCache('account', getCache('account'))
+      Taro.reLaunch({
+        url: '/pages/index/index'
+      })
       resolve();
     } else {
       Taro.showModal({
