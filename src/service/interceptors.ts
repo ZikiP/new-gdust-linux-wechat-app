@@ -37,7 +37,6 @@ const customInterceptor = (chain) => {
       return Promise.reject({ desc: "没有权限访问" });
 
     } else if (res.statusCode === HTTP_STATUS.AUTHENTICATE) {
-      console.log('重新登录')
       setCache('mzsm',1)
       loginLoad().then(function () {
         freshLogin(method,url,data).then(function (res) {
