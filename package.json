@@ -44,7 +44,7 @@
     "@tarojs/runtime": "3.4.2",
     "@tarojs/taro": "3.4.2",
     "fibers": "^5.0.0",
-    "lodash": "4.17.15",
+    "lodash": "^4.17.15",
     "miniprogram-api-typings": "^3.4.5",
     "react": "^17.0.0",
     "react-dom": "^17.0.0"
