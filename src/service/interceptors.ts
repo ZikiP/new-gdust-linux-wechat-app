@@ -1,3 +1,4 @@
+import { useThrottle } from '~/src/utils/Throttle';
 import { getCache } from '@/utils/storage';
 import { freshLogin } from './servers';
 import { getLogin } from '~/src/service/servers';
@@ -32,26 +33,27 @@ const customInterceptor = (chain) => {
 
     } else if (res.statusCode === HTTP_STATUS.FORBIDDEN) {
 
-      pageToLogin()
+      // pageToLogin()
       // TODO 根据自身业务修改
       return Promise.reject({ desc: "没有权限访问" });
 
     } else if (res.statusCode === HTTP_STATUS.AUTHENTICATE) {
       setCache('mzsm',1)
-      loginLoad().then(function () {
-        freshLogin(method,url,data).then(function (res) {
-          if (res.statusCode === 200) {
-            return new Promise((resolve, reject) => {
-              resolve(res)
-          })
-          }else {
-            return new Promise((resolve, reject) => {
-              reject(res)
+      useThrottle(()=>{ //节流
+        loginLoad().then(function () {
+          freshLogin(method,url,data).then(function (res) {
+            if (res.statusCode === 200) {
+              return new Promise((resolve, reject) => {
+                resolve(res)
             })
-          }
-        })
-      }).catch(error=>console.log(error))
-
+            }else {
+              return new Promise((resolve, reject) => {
+                reject(res)
+              })
+            }
+          })
+        }).catch(error=>console.log(error))
+      }, 3000)
       return Promise.reject({ desc: "需要鉴权" })
 
     } else if (res.statusCode === HTTP_STATUS.SERVER_ERROR) {
