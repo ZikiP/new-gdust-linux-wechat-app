@@ -19,6 +19,7 @@ export const loginLoad = () => {
         if (res.code) {
           const  login = async() => {
             const data:any = await getLogin(res.code)
+            console.log(data);
             setCache('token',data.detail.token)
             setCache('account',data.detail.account)
             setCache('openid',data.detail.openid)
