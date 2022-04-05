@@ -87,7 +87,7 @@ const Login = (): JSX.Element => {
             </View>
             <View className='flex mx-auto items-center py-12 px-5 my-20 w-92_100 h-30 mx-3_100 bg-white rounded-xl input-border'>
               <Text className='text-gray-600 text-18 h-16 leading-16 py-0 px-13 border-0 border-solid border-r-2 border-gray-300'>密码</Text>
-              <Input className='pl-13' type='safe-password' onInput={(e): void => { handleChange("password", e) }} placeholder='请输入密码' />
+              <Input className='pl-13' password type='text' onInput={(e): void => { handleChange("password", e) }} placeholder='请输入密码' />
             </View>
           <View className="w-95_100 mx-auto tracking-widest">
             <Button className='theme-bg-color mt-50 text-white' formType="submit">确认绑定</Button>
